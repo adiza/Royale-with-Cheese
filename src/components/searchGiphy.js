@@ -1,8 +1,4 @@
 import React, { Component } from 'react';
-import YouTube from 'react-youtube';
-import ReactDOM from 'react-dom';
-import searchGiphy from './components/searchGiphy.js'
-import './App.css';
 
 class App extends Component {
 
@@ -21,16 +17,7 @@ class App extends Component {
 
 
   render() {
-    const videoId = this.props.urlParams.get("id");
-    if (videoId === null) {
-      return (
-        <div className="App">
-          Please enter video id in the url.
-          Like this: <a href='?id=dQw4w9WgXcQ'>?id=dQw4w9WgXcQ</a>.
-        </div>
-      );
-    }
-    else {
+    
     return (
       <div className="App container">
 
@@ -39,26 +26,15 @@ class App extends Component {
               <input type="text" placeholder={this.state.initialState} /*onChange={this.changeText.bind(this, 'currentText')}*/ />
               <button /*onClick={this.changeText.bind(this, 'currentText')}*/ className="btn btn-primary">Search</button>
             </div>
-
-
-
-
-        <div className="videoFrame">
-          <YouTube videoId={"dQw4w9WgXcQ"+'?wmode=opaque'} opts={{width: '100%', height: '100%'}}/>
-          <div className="gifPlayer">
-          </div>
-        </div>
-
-        <searchGiphy />
+          <h1>Hello, world!</h1>
 
 
       </div>
 
 
 
-          );
-       }
-    }
+    );
   }
+}
 
 export default App;
