@@ -34,7 +34,7 @@ class App extends Component {
     else {
     return (
 
-      <h1> Hello </> /*
+      <SearchGiphy/> /*
       <div className="App container">
 
 

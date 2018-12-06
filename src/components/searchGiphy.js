@@ -1,7 +1,27 @@
 import React, { Component } from 'react';
 import $ from 'jquery';
+import Results from '../Results.js'
 //const giphy_api_key = "api_key=PrDuQjBTO5H7jg1eO1xj6sx5zGCsi4Y6";
 
+  const searchGifs = (query) => {
+  // http://api.giphy.com/v1/gifs/search?q=funny+cat&api_key=dc6zaTOxFJmzC
+  const giphyApi = {
+    baseUrl: 'http://api.giphy.com',
+    searchEndpoint: '/v1/gifs/search',
+    publicApiKey: 'PrDuQjBTO5H7jg1eO1xj6sx5zGCsi4Y6'
+  }
+
+  return $.ajax({
+    url: giphyApi.baseUrl + giphyApi.searchEndpoint,
+    method: 'GET',
+    data: {
+      api_key: giphyApi.publicApiKey,
+      q: query
+    }
+  }).then((response) =>
+    response['data']
+  );
+};
 class App extends Component {
 
   constructor(props) {
@@ -9,20 +29,39 @@ class App extends Component {
     this.state = {
       currentText: " ",
       data: null,
-      value: 0,
-      items: [],
+      query: '',
+      value: null,
+      results: [],
+      searched: true
     }
-        //this.performSearch()
-
+      this.handleChange = this.handleChange.bind(this);
+      this.handleClick = this.handleClick.bind(this);
+    
   }
-    componentDidMount(){
-      var url = 'api.giphy.com/v1/gifs/search?api_key=PrDuQjBTO5H7jg1eO1xj6sx5zGCsi4Y6&q=cheeseburgers&limit=2';
-      fetch(url).then((response) => /*response.json()*/ console.log(response[data]))
-          .then(function(data) { /* do stuff with your JSON data */})
-          .catch((error) => console.log(error));
-  }
+/*
+  componentDidMount() {
 
-  performSearch() {
+    searchGifs('h').then((gifs) => {
+      console.log('gifs from search resposne', gifs);
+      // redefine our app's state to include populated response
+      this.setState({
+        results: gifs,
+        searched: true // flip the switch
+      });
+    });
+  }
+  */
+    //componentDidMount(){
+      //var url = 'api.giphy.com/v1/gifs/search?api_key=PrDuQjBTO5H7jg1eO1xj6sx5zGCsi4Y6&q=cheeseburgers&limit=2';
+      //fetch(url).then((response) => /*response.json()*/ console.log(response['data']))
+         // .then(function(data) { })
+         // .catch((error) => console.log(error));
+ // }
+  
+
+
+  
+   performSearch() {
     console.log("Perform search using giphy")
     const urlString = "api.giphy.com/v1/gifs/search?api_key=PrDuQjBTO5H7jg1eO1xj6sx5zGCsi4Y6&q=cheeseburgers&limit=2";
     $.ajax({
@@ -30,7 +69,7 @@ class App extends Component {
       success: (searchResults) => {
 
         console.log(typeof(searchResults))
-        console.log("this is the string " + searchResults + "duh")
+        console.log("this is the string " + searchResults['data'] + "duh")
       },
       error:(xhr, status, err) => {
         console.error("Failed to fetch data")
@@ -43,8 +82,22 @@ class App extends Component {
 
 
 
-  handleClick() {
-    console.log(this.state.currentText);
+  handleClick(event) {
+    event.preventDefault();
+    //console.log('searched!', ${this.state.query});
+    searchGifs(this.state.query).then((gifs) => {
+      console.log('gifs from search resposne', gifs);
+      // redefine our app's state to include populated response
+      this.setState({
+        results: gifs,
+        searched: true // flip the switch
+      });
+    });
+  }
+  handleChange(event){
+
+    this.setState({query: event.target.value});
+    console.log("this is the updated query:", event.target.value);
   }
 
 
@@ -58,11 +111,12 @@ class App extends Component {
     
     return (
       <div>
-
         <div className="search-box">
-              <input type="text" placeholder={"Search for giphies"} /*onChange={}*/ />
-              <button onClick={this.state.handleClick} className="btn btn-primary">Search</button>
+              <input type="text" placeholder={"enter a search term"} value={this.state.value} onChange={this.handleChange}/>
+              <button onClick={this.handleClick} className="btn btn-primary">Search</button>
         </div>
+
+                <Results searchResults={this.state.results}/>
       </div>
 
 
