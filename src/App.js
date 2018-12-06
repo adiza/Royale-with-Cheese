@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
-import YouTube from 'react-youtube';
-import ReactDOM from 'react-dom';
-import searchGiphy from './components/searchGiphy.js'
-import './App.css';
+//import YouTube from 'react-youtube';
+//import ReactDOM from 'react-dom';
+import SearchGiphy from './components/searchGiphy.js'
+//import './App.css';
 
 class App extends Component {
 
@@ -13,6 +13,7 @@ class App extends Component {
       currentText: " "
     }
   }
+
 
   changeText(currentText) {
   this.setState({currentText});
@@ -32,27 +33,20 @@ class App extends Component {
     }
     else {
     return (
+
+      <h1> Hello </> /*
       <div className="App container">
 
 
-        <div class="search-box">
-              <input type="text" placeholder={this.state.initialState} /*onChange={this.changeText.bind(this, 'currentText')}*/ />
-              <button /*onClick={this.changeText.bind(this, 'currentText')}*/ className="btn btn-primary">Search</button>
-            </div>
 
 
-
-
+        
         <div className="videoFrame">
           <YouTube videoId={"dQw4w9WgXcQ"+'?wmode=opaque'} opts={{width: '100%', height: '100%'}}/>
           <div className="gifPlayer">
           </div>
-        </div>
-
-        <searchGiphy />
-
-
-      </div>
+        </div> 
+    </div>*/
 
 
 
