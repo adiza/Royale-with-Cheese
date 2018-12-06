@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
-//import YouTube from 'react-youtube';
-//import ReactDOM from 'react-dom';
+import YouTube from 'react-youtube';
+import ReactDOM from 'react-dom';
 import SearchGiphy from './components/searchGiphy.js'
-//import './App.css';
+import './App.css';
 
 class App extends Component {
 
@@ -34,11 +34,11 @@ class App extends Component {
     else {
     return (
 
-      <SearchGiphy/> /*
+      
       <div className="App container">
 
 
-
+        <SearchGiphy/> 
 
         
         <div className="videoFrame">
@@ -46,7 +46,7 @@ class App extends Component {
           <div className="gifPlayer">
           </div>
         </div> 
-    </div>*/
+    </div>
 
 
 

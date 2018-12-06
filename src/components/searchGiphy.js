@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import $ from 'jquery';
-import Results from '../Results.js'
+import Results from './Results.js'
 //const giphy_api_key = "api_key=PrDuQjBTO5H7jg1eO1xj6sx5zGCsi4Y6";
 
   const searchGifs = (query) => {
