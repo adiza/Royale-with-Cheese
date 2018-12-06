@@ -26,3 +26,17 @@
   margin-bottom: 50px;
   margin-right: 10px;
 }
+
+.gifBar {
+  margin: auto;
+  position: relative;
+  height: 60px;
+  max-width: 900px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.smallGif {
+  height: 50px;
+  width: 75px;
+}
