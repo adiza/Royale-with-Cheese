@@ -11,28 +11,44 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.state = { 
-      url: "https://media.giphy.com/media/D43M5jtwc4upq/giphy.gif",
+      currentGifUrl: null,
+      gifs: [],
+      videoId: this.props.urlParams.get("id"),
     };
-    this.changeDisplay = this.changeDisplay.bind(this);
-  }
-
-  changeDisplay(newUrl) {
-    this.setState({url: newUrl});
   }
 
   componentDidMount() {
-    this.setState({intervalId: setInterval(this.timer, 1000)});
+    this.setState({intervalId: setInterval(this.timer, 100)});
+    this.fetchGifs((gifs) => this.setState({gifs}));
+  }
+
+  fetchGifs = (callback) => {
+    callback([
+      {url: 'https://media.giphy.com/media/2bV8SBlxOiU2NityCb/giphy.gif', time: 10.3},
+      {url: 'https://media.giphy.com/media/Bo0ZNexSCyy9JyOXbW/giphy.gif', time: 20},
+      {url: 'https://media.giphy.com/media/l4tUX3sa1D9ndNcQg/giphy.gif', time: 50}
+    ]);
   }
 
   timer = () => {
-    this.player.internalPlayer.getCurrentTime()
-      .then((time) => this.setState({currentVideoTime: this.time}));
-    //this.setState({currentVideoTime: this.player.internalPlayer.getCurrentTime()});
+    this.player.internalPlayer
+      .getCurrentTime()
+      .then((time) => {
+        this.setState({currentVideoTime: time})
+        this.state.gifs.forEach((gif) => {
+          if (Math.abs(time - gif.time) < 0.15) {
+            this.setState({currentGifUrl: gif.url});
+          }
+        });
+      });
+  }
+
+  updateCurrentGif = (time) => {
+
   }
 
   render() {
-    const videoId = this.props.urlParams.get("id");
-    if (videoId === null) {
+    if (this.state.videoId === null) {
       return (
         <div className="App">
           Please enter video id in the url.
@@ -45,13 +61,13 @@ class App extends Component {
         <div className="App container">
           <SearchGiphy currentTime={this.state.currentVideoTime}/> 
           <div className="videoFrame">
-            <YouTube videoId={videoId} opts={{width: '100%', height: '100%'}}
+            <YouTube videoId={this.state.videoId} opts={{width: '100%', height: '100%'}}
               ref={(player) => (this.player = player)} />
             <div>
-              <GifDisplay url={this.state.url}/>
+              <GifDisplay url={this.state.currentGifUrl}/>
             </div>
           </div>
-          <GifBar className="gifBar" onHover={this.changeDisplay} />
+          <GifBar className="gifBar" gifs={this.state.gifs} />
         </div>
       );
     }
