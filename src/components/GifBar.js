@@ -1,5 +1,4 @@
 import React from 'react';
-import './App.css';
 
 class GifBar extends React.Component {
   render() {

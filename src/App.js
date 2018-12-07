@@ -1,11 +1,9 @@
 import React, { Component } from 'react';
 import YouTube from 'react-youtube';
-import ReactDOM from 'react-dom';
-import SearchGiphy from './components/searchGiphy.js'
-import GIFPlayer from './components/GIFPlayer.js';
 import './App.css';
-import GifDisplay from './GifDisplay';
-import GifBar from './GifBar';
+import SearchGiphy from './components/searchGiphy.js'
+import GifDisplay from './components/GifDisplay';
+import GifBar from './components/GifBar';
 
 class App extends Component {
   constructor(props) {
@@ -18,6 +16,9 @@ class App extends Component {
   }
 
   componentDidMount() {
+    if (this.state.videoId === null) {
+      return;
+    }
     this.setState({intervalId: setInterval(this.timer, 100)});
     this.fetchGifs((gifs) => this.setState({gifs}));
   }
@@ -41,10 +42,6 @@ class App extends Component {
           }
         });
       });
-  }
-
-  updateCurrentGif = (time) => {
-
   }
 
   render() {
