@@ -2,24 +2,19 @@ import React, { Component } from 'react';
 import YouTube from 'react-youtube';
 import ReactDOM from 'react-dom';
 import SearchGiphy from './components/searchGiphy.js'
+import GIFPlayer from './components/GIFPlayer.js';
 import './App.css';
 
 class App extends Component {
-
-  constructor(props) {
-    super(props);
-    this.state = {
-      initialState: "Search for giphies",
-      currentText: " "
-    }
+  componentDidMount() {
+    this.setState({intervalId: setInterval(this.timer, 1000)});
   }
 
-
-  changeText(currentText) {
-  this.setState({currentText});
-  //console.log({currentText});
+  timer = () => {
+    this.player.internalPlayer.getCurrentTime()
+      .then((time) => this.setState({currentVideoTime: this.time}));
+    //this.setState({currentVideoTime: this.player.internalPlayer.getCurrentTime()});
   }
-
 
   render() {
     const videoId = this.props.urlParams.get("id");
@@ -30,29 +25,19 @@ class App extends Component {
           Like this: <a href='?id=dQw4w9WgXcQ'>?id=dQw4w9WgXcQ</a>.
         </div>
       );
-    }
-    else {
-    return (
-
-      
-      <div className="App container">
-
-
-        <SearchGiphy/> 
-
-        
-        <div className="videoFrame">
-          <YouTube videoId={"dQw4w9WgXcQ"+'?wmode=opaque'} opts={{width: '100%', height: '100%'}}/>
-          <div className="gifPlayer">
-          </div>
-        </div> 
-    </div>
-
-
-
-          );
-       }
+    } else {
+      return (
+        <div className="App container">
+          <SearchGiphy currentTime={this.state.currentVideoTime}/> 
+          <div className="videoFrame">
+            <YouTube videoId={videoId} opts={{width: '100%', height: '100%'}}
+              ref={(player) => (this.player = player)} />
+            <GIFPlayer gif_url={null}/>
+          </div> 
+        </div>
+      );
     }
   }
+}
 
 export default App;
