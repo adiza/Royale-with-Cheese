@@ -92,7 +92,9 @@ class App extends Component {
       .getBoundingClientRect();
     const fracX = this.state.newGifX / videoRect.width;
     const fracY = this.state.newGifY / videoRect.height;
-    const toSave = {url, time, videoId, x: fracX, y: fracY};
+    const toSave = {url, time, videoId, x: fracX, y: fracY,
+      timeFraction: time/this.state.videoDuration
+    };
     this.postNewGif(toSave);
     this.setState({
       gifs: this.state.gifs.concat([toSave]),
