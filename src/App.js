@@ -1,9 +1,11 @@
 import React, { Component } from 'react';
 import YouTube from 'react-youtube';
 import './App.css';
+import ReactDOM from 'react-dom';
 import SearchGiphy from './components/searchGiphy.js'
 import GifDisplay from './components/GifDisplay';
 import GifBar from './components/GifBar';
+import {Rnd} from 'react-rnd';
 
 class App extends Component {
   constructor(props) {
@@ -13,6 +15,8 @@ class App extends Component {
       gifs: [],
       videoId: this.props.urlParams.get("id"),
       videoDuration: null,
+      newGif: null,
+      newGifX: 0, newGifY: 0,
     };
     this.player = React.createRef();
     this.gifPlayer = React.createRef();
@@ -50,6 +54,7 @@ class App extends Component {
   }
 
   timer = () => {
+    try {
     this.player.current.internalPlayer
       .getCurrentTime()
       .then((time) => {
@@ -60,15 +65,40 @@ class App extends Component {
           }
         });
       });
+    } catch (e) {
+      clearInterval(this.state.intervalId);
+    }
   }
 
   gifEnded = () => { this.setState({currentGifUrl: null}); }
   showGifSearch = () => { this.setState({showGifSearch: true}); }
 
   addNewGif = (gif) => {
-    console.log('Adding gif')
-    console.log(gif);
-    this.setState({showGifSearch: false});
+    this.setState({newGif: gif, showGifSearch: false});
+    this.player.current.internalPlayer.pauseVideo();
+  }
+
+  postNewGif = (gifInfo) => {
+    // TODO
+  }
+
+  saveNewGif = () => {
+    console.log(this.state.newGif.id);
+    const gif = this.state.newGif;
+    const url =  `https://media.giphy.com/media/${gif.id}/giphy.gif`;
+    const time = this.state.currentVideoTime;
+    const videoId = this.state.videoId;
+    const videoRect = ReactDOM.findDOMNode(this.player.current).children[0]
+      .getBoundingClientRect();
+    const fracX = this.state.newGifX / videoRect.width;
+    const fracY = this.state.newGifY / videoRect.height;
+    const toSave = {url, time, videoId, x: fracX, y: fracY};
+    this.postNewGif(toSave);
+    this.setState({
+      gifs: this.state.gifs.concat([toSave]),
+      newGif: null,
+      newGifX: 0, newGifY: 0
+    });
   }
 
   render() {
@@ -85,10 +115,22 @@ class App extends Component {
         <div className="videoFrame">
           <YouTube videoId={this.state.videoId} opts={{width: '100%', height: '100%'}}
             ref={this.player} onReady={this.onPlayerReady} />
+          {this.state.newGif ?
+              <Rnd enableResizing={false} height="100px" bounds="parent"
+                onDragStop={(e, d) => { this.setState({newGifX: d.x, newGifY: d.y}) }}>
+                <img src={this.state.newGif.images.fixed_height_small.url} />
+              </Rnd>
+              : ''}
           {this.state.showGifSearch ? <SearchGiphy onGifClick={this.addNewGif} /> : '' }
           <GifDisplay url={this.state.currentGifUrl} onEnd={this.gifEnded}/>
         </div>
         <GifBar gifs={this.state.gifs} onAddGif={this.showGifSearch} />
+        {this.state.newGif ? 
+          <button type="button" className="btn btn-primary"
+            onClick={this.saveNewGif}>
+            Save
+          </button> 
+            : ''}
       </div>
     );
   }

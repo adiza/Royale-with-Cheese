@@ -2,6 +2,6 @@
   width: 100%;
   display: flex;
   flex-wrap: wrap;
-  height: 400px;
+  height: 360px;
   overflow-y: scroll;
 }
