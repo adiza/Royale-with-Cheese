@@ -15,6 +15,7 @@ class App extends Component {
       videoDuration: null,
     };
     this.player = React.createRef();
+    this.gifPlayer = React.createRef();
   }
 
   addRelativeTimes = (gifs, duration) => {
@@ -61,6 +62,10 @@ class App extends Component {
       });
   }
 
+  gifEnded = () => {
+    this.setState({currentGifUrl: null});
+  }
+
   render() {
     if (this.state.videoId === null) {
       return (
@@ -70,21 +75,19 @@ class App extends Component {
         </div>
       );
     }
-    else {
-      return (
-        <div className="App container">
-          <SearchGiphy currentTime={this.state.currentVideoTime}/> 
-          <div className="videoFrame">
-            <YouTube videoId={this.state.videoId} opts={{width: '100%', height: '100%'}}
-              ref={this.player} onReady={this.onPlayerReady} />
-            <div>
-              <GifDisplay url={this.state.currentGifUrl}/>
-            </div>
+    return (
+      <div className="App container">
+        <SearchGiphy currentTime={this.state.currentVideoTime}/> 
+        <div className="videoFrame">
+          <YouTube videoId={this.state.videoId} opts={{width: '100%', height: '100%'}}
+            ref={this.player} onReady={this.onPlayerReady} />
+          <div>
+            <GifDisplay url={this.state.currentGifUrl} onEnd={this.gifEnded}/>
           </div>
-          <GifBar className="gifBar" gifs={this.state.gifs} />
         </div>
-      );
-    }
+        <GifBar className="gifBar" gifs={this.state.gifs} />
+      </div>
+    );
   }
 }
 

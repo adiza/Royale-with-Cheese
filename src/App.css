@@ -20,11 +20,11 @@
   position: absolute;
   height: 100px;
   width: 150px;
-  background: black;
   bottom: 0;
   right: 0;
   margin-bottom: 50px;
   margin-right: 10px;
+  overflow: hidden;
 }
 
 .gifBar {
@@ -36,7 +36,6 @@
 }
 
 .smallGif {
-  float: left;
   height: 50px;
   width: 75px;
   position: absolute;
