@@ -1,14 +1,19 @@
 import React from 'react';
 import Gif from './Gif';
+import './GifBar.css';
 
 class GifBar extends React.Component {
   render() {
     return (
-      <div className={this.props.className}>
+      <div className="gifBar">
         { this.props.gifs.map((gif) =>
           <Gif className="smallGif" src={gif.url} key={gif.url}
             width={75} height={50}
             style={{marginLeft: gif.timeFraction*100 + "%"}} />) }
+          <button type="button" className="btn btn-primary add-gif-button"
+            onClick={this.props.onAddGif}>
+            Add gif
+          </button>
       </div>);
   }
 };
