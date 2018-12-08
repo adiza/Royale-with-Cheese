@@ -14,21 +14,7 @@ class App extends Component {
       videoId: this.props.urlParams.get("id"),
       videoDuration: null,
     };
-  }
-
-  componentDidMount() {
-    if (this.state.videoId === null) {
-      return;
-    }
-    this.setState({intervalId: setInterval(this.timer, 100)});
-    Promise
-      .all([this.fetchGifs(), this.getVideoDuration()])
-      .then(([gifs, duration]) => {
-        this.setState({
-          gifs: this.addRelativeTimes(gifs, duration),
-          videoDuration: duration
-        })
-      });
+    this.player = React.createRef();
   }
 
   addRelativeTimes = (gifs, duration) => {
@@ -47,11 +33,23 @@ class App extends Component {
   }
 
   getVideoDuration = (callback) => {
-    return this.player.internalPlayer.getDuration();
+    return this.player.current.internalPlayer.getDuration();
+  }
+
+  onPlayerReady = () => {
+    this.setState({intervalId: setInterval(this.timer, 100)});
+    Promise
+      .all([this.fetchGifs(), this.getVideoDuration()])
+      .then(([gifs, duration]) => {
+        this.setState({
+          gifs: this.addRelativeTimes(gifs, duration),
+          videoDuration: duration
+        })
+      });
   }
 
   timer = () => {
-    this.player.internalPlayer
+    this.player.current.internalPlayer
       .getCurrentTime()
       .then((time) => {
         this.setState({currentVideoTime: time})
@@ -78,7 +76,7 @@ class App extends Component {
           <SearchGiphy currentTime={this.state.currentVideoTime}/> 
           <div className="videoFrame">
             <YouTube videoId={this.state.videoId} opts={{width: '100%', height: '100%'}}
-              ref={(player) => (this.player = player)} />
+              ref={this.player} onReady={this.onPlayerReady} />
             <div>
               <GifDisplay url={this.state.currentGifUrl}/>
             </div>

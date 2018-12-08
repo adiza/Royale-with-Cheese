@@ -32,11 +32,12 @@
   position: relative;
   height: 60px;
   max-width: 900px;
-  display: flex;
-  justify-content: space-between;
+  width: 100%
 }
 
 .smallGif {
+  float: left;
   height: 50px;
   width: 75px;
+  position: absolute;
 }
