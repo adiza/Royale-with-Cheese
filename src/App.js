@@ -62,8 +62,13 @@ class App extends Component {
       });
   }
 
-  gifEnded = () => {
-    this.setState({currentGifUrl: null});
+  gifEnded = () => { this.setState({currentGifUrl: null}); }
+  showGifSearch = () => { this.setState({showGifSearch: true}); }
+
+  addNewGif = (gif) => {
+    console.log('Adding gif')
+    console.log(gif);
+    this.setState({showGifSearch: false});
   }
 
   render() {
@@ -77,15 +82,13 @@ class App extends Component {
     }
     return (
       <div className="App container">
-        <SearchGiphy currentTime={this.state.currentVideoTime}/> 
         <div className="videoFrame">
           <YouTube videoId={this.state.videoId} opts={{width: '100%', height: '100%'}}
             ref={this.player} onReady={this.onPlayerReady} />
-          <div>
-            <GifDisplay url={this.state.currentGifUrl} onEnd={this.gifEnded}/>
-          </div>
+          {this.state.showGifSearch ? <SearchGiphy onGifClick={this.addNewGif} /> : '' }
+          <GifDisplay url={this.state.currentGifUrl} onEnd={this.gifEnded}/>
         </div>
-        <GifBar className="gifBar" gifs={this.state.gifs} />
+        <GifBar gifs={this.state.gifs} onAddGif={this.showGifSearch} />
       </div>
     );
   }

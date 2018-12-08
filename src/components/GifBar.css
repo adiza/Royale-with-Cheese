@@ -1,0 +1,22 @@
+.gifBar {
+  margin: auto;
+  position: relative;
+  height: 60px;
+  max-width: 900px;
+  width: calc(100% - 20px);
+  margin-left: 10px;
+  margin-right: 10px;
+}
+
+.smallGif {
+  height: 50px;
+  width: 75px;
+  position: absolute;
+}
+
+.add-gif-button {
+  position: absolute;
+  height: 40px;
+  top: 5px;
+  right: 0;
+}

@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import Results from './Results.js'
+import PropTypes from 'prop-types';
 
 const searchGifs = (query, callback) => {
   // http://api.giphy.com/v1/gifs/search?q=funny+cat&api_key=dc6zaTOxFJmzC
@@ -16,7 +17,7 @@ const searchGifs = (query, callback) => {
     .then((json) => callback(json['data']));
 };
 
-class App extends Component {
+class SearchGiphy extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -34,7 +35,6 @@ class App extends Component {
   handleClick(event) {
     event.preventDefault();
     searchGifs(this.state.query, (gifs) => {
-      console.log('gifs from search resposne', gifs);
       // redefine our app's state to include populated response
       this.setState({
         results: gifs,
@@ -45,7 +45,6 @@ class App extends Component {
 
   handleChange(event){
     this.setState({query: event.target.value});
-    console.log("this is the updated query:", event.target.value);
   }
 
   changeText(currentText) {
@@ -54,16 +53,20 @@ class App extends Component {
 
   render() {
     return (
-      <div>
+      <div className="giphy-search">
+        <Results searchResults={this.state.results} onGifClick={this.props.onGifClick}/>
+
         <div className="search-box">
           <input type="text" placeholder={"enter a search term"} value={this.state.value} onChange={this.handleChange}/>
           <button onClick={this.handleClick} className="btn btn-primary">Search</button>
         </div>
-
-        <Results searchResults={this.state.results}/>
       </div>
     );
   }
 }
 
-export default App;
+SearchGiphy.propTypes = {
+  onGifClick: PropTypes.func.isRequired,
+};
+
+export default SearchGiphy;

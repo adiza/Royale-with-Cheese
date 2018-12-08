@@ -27,16 +27,12 @@
   overflow: hidden;
 }
 
-.gifBar {
-  margin: auto;
-  position: relative;
-  height: 60px;
-  max-width: 900px;
-  width: 100%
-}
-
-.smallGif {
-  height: 50px;
-  width: 75px;
+.giphy-search {
+  z-index: 100;
+  background: white;
   position: absolute;
+  right: 10px;
+  bottom: 10px;
+  width: 400px;
+  max-height: 400px;
 }
