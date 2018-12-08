@@ -12,6 +12,7 @@ class App extends Component {
       currentGifUrl: null,
       gifs: [],
       videoId: this.props.urlParams.get("id"),
+      videoDuration: null,
     };
   }
 
@@ -20,15 +21,33 @@ class App extends Component {
       return;
     }
     this.setState({intervalId: setInterval(this.timer, 100)});
-    this.fetchGifs((gifs) => this.setState({gifs}));
+    Promise
+      .all([this.fetchGifs(), this.getVideoDuration()])
+      .then(([gifs, duration]) => {
+        this.setState({
+          gifs: this.addRelativeTimes(gifs, duration),
+          videoDuration: duration
+        })
+      });
   }
 
-  fetchGifs = (callback) => {
-    callback([
+  addRelativeTimes = (gifs, duration) => {
+    return gifs.map((gif) => Object.assign(
+      {timeFraction: gif.time/duration},
+      gif));
+  }
+
+  fetchGifs = () => {
+    const result = [
       {url: 'https://media.giphy.com/media/2bV8SBlxOiU2NityCb/giphy.gif', time: 10.3},
       {url: 'https://media.giphy.com/media/Bo0ZNexSCyy9JyOXbW/giphy.gif', time: 20},
       {url: 'https://media.giphy.com/media/l4tUX3sa1D9ndNcQg/giphy.gif', time: 50}
-    ]);
+    ];
+    return new Promise((resolve, reject) => resolve(result));
+  }
+
+  getVideoDuration = (callback) => {
+    return this.player.internalPlayer.getDuration();
   }
 
   timer = () => {
