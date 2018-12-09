@@ -25,6 +25,14 @@ class SearchGiphy extends Component {
       results: [],
       searchTimeoutId: null,
     }
+    this.queryInput = React.createRef();
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    if (prevProps.open == this.props.open || !this.props.open) {
+      return;
+    }
+    this.queryInput.current.focus();
   }
 
   handleSearch = () => {
@@ -39,16 +47,20 @@ class SearchGiphy extends Component {
     if (this.searchTimeoutId) {
       clearTimeout(this.searchTimeoutId);
     }
-    this.setState({ searchTimeoutId: setTimeout(this.handleSearch, 500) });
+    this.setState({ searchTimeoutId: setTimeout(this.handleSearch, 1500) });
   }
 
   render() {
+    if (!this.props.open) {
+      return '';
+    }
     return (
       <div className="giphy-search">
         <Results searchResults={this.state.results} onGifClick={this.props.onGifClick}/>
 
         <div className="search-box">
-          <input type="text" placeholder={"enter a search term"} value={this.state.query} onChange={this.handleChange}/>
+          <input type="text" placeholder={"enter a search term"} value={this.state.query}
+            onChange={this.handleChange} ref={this.queryInput}/>
           <button type="button" className="btn btn-primary" onClick={this.props.closeGif}> CLOSE </button>
         </div>
       </div>
@@ -57,6 +69,7 @@ class SearchGiphy extends Component {
 }
 
 SearchGiphy.propTypes = {
+  open: PropTypes.bool.isRequired,
   onGifClick: PropTypes.func.isRequired,
 };
 
