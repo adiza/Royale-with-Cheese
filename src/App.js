@@ -16,7 +16,9 @@ class App extends Component {
       videoDuration: null,
       newGif: null,
       newGifX: 0, newGifY: 0,
+      previouslyUsedGifs: JSON.parse(localStorage.getItem("usedGifs")) || [],
     };
+
     this.player = React.createRef();
     this.gifPlayer = React.createRef();
     this.searchDiv = React.createRef();
@@ -31,7 +33,6 @@ class App extends Component {
   }
 
   handleEsc = (event) => {
-    console.log(event.key);
     if (event.key === "Escape") {
       this.setState({showGifSearch: false});
     }
@@ -121,7 +122,15 @@ class App extends Component {
   closeGifSearch = () => { this.setState({showGifSearch: false}); }
 
   addNewGif = (gif) => {
-    this.setState({newGif: gif, showGifSearch: false});
+    this.setState(({previouslyUsedGifs}) => {
+      if (previouslyUsedGifs.includes(gif)) {
+        return { newGif: gif, showGifSearch: false };
+      } else {
+        return { newGif: gif, showGifSearch: false,
+          previouslyUsedGifs: [gif, ...previouslyUsedGifs]};
+      }
+    }, () => localStorage.setItem("usedGifs",
+      JSON.stringify(this.state.previouslyUsedGifs)));
     this.player.current.internalPlayer.pauseVideo();
   }
 
@@ -172,6 +181,7 @@ class App extends Component {
           }
           <div ref={this.searchDiv}>
             <SearchGiphy onGifClick={this.addNewGif}
+              previouslyUsedGifs={this.state.previouslyUsedGifs}
               open={this.state.showGifSearch} closeGifSearch={this.closeGifSearch}/>
           </div>
           {this.state.gifs.map(gif =>

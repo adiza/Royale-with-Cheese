@@ -23,6 +23,7 @@ class SearchGiphy extends Component {
     super(props);
     this.state = {
       query: '',
+      loading: false,
       results: [],
       searchTimeoutId: null,
     }
@@ -39,7 +40,7 @@ class SearchGiphy extends Component {
   handleSearch = () => {
     searchGifs(this.state.query, (gifs) => {
       // redefine our app's state to include populated response
-      this.setState({ results: gifs });
+      this.setState({ results: gifs, loading: false });
     });
   }
 
@@ -48,7 +49,14 @@ class SearchGiphy extends Component {
     if (this.searchTimeoutId) {
       clearTimeout(this.searchTimeoutId);
     }
-    this.setState({ searchTimeoutId: setTimeout(this.handleSearch, 1500) });
+    if (event.target.value !== '') {
+      this.setState({
+        loading: true,
+        searchTimeoutId: setTimeout(this.handleSearch, 1500)
+      });
+    } else {
+      this.setState({ loading: false });
+    }
   }
 
   render() {
@@ -59,8 +67,11 @@ class SearchGiphy extends Component {
       <div className="giphy-search">
         <h5 className="search-title">
           {this.state.query ? "Search results" : "Previously used gifs" }
+          {this.state.loading ? <span className="loading">  loading</span> : ""}
         </h5>
-        <Results searchResults={this.state.results} onGifClick={this.props.onGifClick}/>
+        <Results searchResults={this.state.query ?
+            this.state.results : this.props.previouslyUsedGifs }
+          onGifClick={this.props.onGifClick}/>
 
         <div className="search-box">
           <input type="text" placeholder={"enter a search term"} value={this.state.query}

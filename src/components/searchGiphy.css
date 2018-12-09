@@ -22,3 +22,14 @@
 .Results {
   height: 200px;
 }
+
+.loading {
+  animation: blinker 2s ease infinite;
+  color: lightgrey;
+}
+
+@keyframes blinker {
+  50% {
+    opacity: 0;
+  }
+}
