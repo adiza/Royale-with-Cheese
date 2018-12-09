@@ -72,6 +72,9 @@ class App extends Component {
 
   gifEnded = () => { this.setState({currentGifUrl: null}); }
   showGifSearch = () => { this.setState({showGifSearch: true}); }
+  closeGifSearch = () => { this.setState({showGifSearch: false}); }
+
+
 
   addNewGif = (gif) => {
     this.setState({newGif: gif, showGifSearch: false});
@@ -123,15 +126,17 @@ class App extends Component {
                 <img src={this.state.newGif.images.fixed_height_small.url} />
               </Rnd>
               : ''}
-          {this.state.showGifSearch ? <SearchGiphy onGifClick={this.addNewGif} /> : '' }
+          {this.state.showGifSearch ? <SearchGiphy onGifClick={this.addNewGif} closeGif={this.closeGifSearch}/> : '' }
           <GifDisplay url={this.state.currentGifUrl} onEnd={this.gifEnded}/>
         </div>
-        <GifBar gifs={this.state.gifs} onAddGif={this.showGifSearch} />
+        <GifBar gifs={this.state.gifs} onAddGif={this.showGifSearch} closeGif={this.closeGifSearch}/>
+         
         {this.state.newGif ? 
           <button type="button" className="btn btn-primary"
             onClick={this.saveNewGif}>
             Save
           </button> 
+         
             : ''}
       </div>
     );

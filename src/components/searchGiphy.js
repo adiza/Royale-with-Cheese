@@ -59,6 +59,7 @@ class SearchGiphy extends Component {
         <div className="search-box">
           <input type="text" placeholder={"enter a search term"} value={this.state.value} onChange={this.handleChange}/>
           <button onClick={this.handleClick} className="btn btn-primary">Search</button>
+          <button type="button" className="btn btn-primary" onClick={this.props.closeGif}> CLOSE </button>
         </div>
       </div>
     );
