@@ -21,8 +21,8 @@
   position: absolute;
   height: 100px;
   width: 150px;
-  bottom: 0;
-  right: 0;
+  top: 0;
+  left: 0;
   margin-bottom: 50px;
   margin-right: 10px;
   overflow: hidden;
