@@ -11,7 +11,7 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.state = { 
-      currentGifUrl: null,
+      currentGif: null,
       gifs: [],
       videoId: this.props.urlParams.get("id"),
       videoDuration: null,
@@ -30,9 +30,12 @@ class App extends Component {
 
   fetchGifs = () => {
     const result = [
-      {url: 'https://media.giphy.com/media/2bV8SBlxOiU2NityCb/giphy.gif', time: 10.3},
-      {url: 'https://media.giphy.com/media/Bo0ZNexSCyy9JyOXbW/giphy.gif', time: 20},
-      {url: 'https://media.giphy.com/media/l4tUX3sa1D9ndNcQg/giphy.gif', time: 50}
+      {url: 'https://media.giphy.com/media/2bV8SBlxOiU2NityCb/giphy.gif',
+        time: 10.3, fracX: 0.5, fracY: 0.1},
+      {url: 'https://media.giphy.com/media/Bo0ZNexSCyy9JyOXbW/giphy.gif',
+        time: 20, fracX: 0.1, fracY: 0.1},
+      {url: 'https://media.giphy.com/media/l4tUX3sa1D9ndNcQg/giphy.gif',
+        time: 50, fracX: 0.2, fracY: 0.2}
     ];
     return new Promise((resolve, reject) => resolve(result));
   }
@@ -54,23 +57,19 @@ class App extends Component {
   }
 
   timer = () => {
-    try {
     this.player.current.internalPlayer
       .getCurrentTime()
       .then((time) => {
         this.setState({currentVideoTime: time})
         this.state.gifs.forEach((gif) => {
           if (Math.abs(time - gif.time) < 0.15) {
-            this.setState({currentGifUrl: gif.url});
+            this.setState({currentGif: gif});
           }
         });
       });
-    } catch (e) {
-      clearInterval(this.state.intervalId);
-    }
   }
 
-  gifEnded = () => { this.setState({currentGifUrl: null}); }
+  gifEnded = () => { this.setState({currentGif: null}); }
   showGifSearch = () => { this.setState({showGifSearch: true}); }
   closeGifSearch = () => { this.setState({showGifSearch: false}); }
 
@@ -86,7 +85,6 @@ class App extends Component {
   }
 
   saveNewGif = () => {
-    console.log(this.state.newGif.id);
     const gif = this.state.newGif;
     const url =  `https://media.giphy.com/media/${gif.id}/giphy.gif`;
     const time = this.state.currentVideoTime;
@@ -95,7 +93,7 @@ class App extends Component {
       .getBoundingClientRect();
     const fracX = this.state.newGifX / videoRect.width;
     const fracY = this.state.newGifY / videoRect.height;
-    const toSave = {url, time, videoId, x: fracX, y: fracY,
+    const toSave = {url, time, videoId, fracX, fracY,
       timeFraction: time/this.state.videoDuration
     };
     this.postNewGif(toSave);
@@ -127,7 +125,7 @@ class App extends Component {
               </Rnd>
               : ''}
           {this.state.showGifSearch ? <SearchGiphy onGifClick={this.addNewGif} closeGif={this.closeGifSearch}/> : '' }
-          <GifDisplay url={this.state.currentGifUrl} onEnd={this.gifEnded}/>
+          <GifDisplay gif={this.state.currentGif} onEnd={this.gifEnded}/>
         </div>
         <GifBar gifs={this.state.gifs} onAddGif={this.showGifSearch} closeGif={this.closeGifSearch}/>
          
