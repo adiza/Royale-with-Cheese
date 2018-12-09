@@ -11,7 +11,6 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.state = { 
-      currentGifs: [],
       gifs: [],
       videoId: this.props.urlParams.get("id"),
       videoDuration: null,
@@ -60,31 +59,37 @@ class App extends Component {
   }
 
   timer = () => {
+    try {
     this.player.current.internalPlayer
       .getCurrentTime()
       .then((time) => {
         this.setState({currentVideoTime: time})
-        let gifsToAdd = [];
-        this.state.gifs.forEach((gif) => {
-          if (Math.abs(time - gif.time) < 0.15 &&
-            !this.state.currentGifs.includes(gif)) {
-            gifsToAdd.push(gif);
+        this.setState(({gifs}) => {
+          return {
+            gifs: gifs.map((gif) => {
+              if (Math.abs(time - gif.time) < 0.15) {
+                return Object.assign(gif, {playing: true})
+              }
+              return gif;
+            })
           }
         });
-        this.setState(({currentGifs}) =>
-          ({currentGifs: currentGifs.concat(gifsToAdd)}));
       });
+    } catch (e) {
+      clearInterval(this.state.intervalId);
+    }
   }
 
   gifEnded = (gif) => {
-    this.setState(({currentGifs}) => {
-      const gif_index = this.state.currentGifs.indexOf(gif);
+    this.setState(({gifs}) => {
+      const gif_index = gifs.indexOf(gif);
       if (gif_index === -1) {
-        return currentGifs;
+        return gifs;
       }
-      return {currentGifs: [
-        ...currentGifs.slice(0, gif_index),
-        ...currentGifs.slice(gif_index+1)
+      return {gifs: [
+        ...gifs.slice(0, gif_index),
+        Object.assign(gif, {playing: false}),
+        ...gifs.slice(gif_index+1)
       ]};
     });
   }
@@ -142,9 +147,9 @@ class App extends Component {
               </Rnd>
               : ''}
           {this.state.showGifSearch ? <SearchGiphy onGifClick={this.addNewGif} closeGif={this.closeGifSearch}/> : '' }
-          {this.state.currentGifs.map((gif) =>
+          {this.state.gifs.map(gif =>
             <GifDisplay gif={gif} key={gif.url+gif.timeFraction}
-              onEnd={() => this.gifEnded(gif)}/>)}
+              playing={gif.playing} onEnd={() => this.gifEnded(gif)}/>)}
         </div>
         <GifBar gifs={this.state.gifs} onAddGif={this.showGifSearch} closeGif={this.closeGifSearch}/>
          

@@ -1,5 +1,6 @@
 import React from 'react';
 import Gif from './Gif';
+import PropTypes from 'prop-types';
 
 class GifDisplay extends React.Component {
   render() {
@@ -7,13 +8,21 @@ class GifDisplay extends React.Component {
       return "";
     }
     return (
-      <Gif className="gifPlayer" src={this.props.gif.url} alt="gif"
+      <Gif className="gif-player" src={this.props.gif.url} alt="gif"
         style={{marginLeft: this.props.gif.fracX*100 + '%',
-          marginTop: this.props.gif.fracY*100 + '%'}}
-        autoPlay={true} width={150} loop={false} onEnd={this.props.onEnd}
+          marginTop: this.props.gif.fracY*100 + '%',
+          visibility: this.props.playing ? 'visible' : 'hidden',
+        }}
+        playing={this.props.playing}
+        width={150} loop={false} onEnd={this.props.onEnd}
       />
     );
   }
 };
+
+GifDisplay.propTypes = {
+  playing: PropTypes.bool,
+  gif: PropTypes.object.isRequired,
+}
 
 export default GifDisplay;
