@@ -19,6 +19,20 @@ class App extends Component {
     };
     this.player = React.createRef();
     this.gifPlayer = React.createRef();
+    this.searchDiv = React.createRef();
+
+    document.addEventListener('mousedown', this.handleDocumentClick, false);
+  }
+
+  componentWillUnmount() {
+    document.removeEventListener('mousedown', this.handleDocumentClick, false);
+  }
+
+  handleDocumentClick = (event) => {
+    if (!this.showGifSearch || this.searchDiv.current.contains(event.target)) {
+      return;
+    }
+    this.setState({showGifSearch: false});
   }
 
   addRelativeTimes = (gifs, duration) => {
@@ -145,8 +159,12 @@ class App extends Component {
                 onDragStop={(e, d) => { this.setState({newGifX: d.x, newGifY: d.y}) }}>
                 <img src={this.state.newGif.images.fixed_height_small.url} />
               </Rnd>
-              : ''}
-          {this.state.showGifSearch ? <SearchGiphy onGifClick={this.addNewGif} closeGif={this.closeGifSearch}/> : '' }
+              : ''
+          }
+          <div ref={this.searchDiv}>
+            <SearchGiphy onGifClick={this.addNewGif} closeGif={this.closeGifSearch}
+              open={this.state.showGifSearch} />
+          </div>
           {this.state.gifs.map(gif =>
             <GifDisplay gif={gif} key={gif.url+gif.timeFraction}
               playing={gif.playing} onEnd={() => this.gifEnded(gif)}/>)}

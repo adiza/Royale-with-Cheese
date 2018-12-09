@@ -8,7 +8,7 @@ class GifBar extends React.Component {
       <div className="gifBar">
         { this.props.gifs.map((gif) =>
           <Gif className="smallGif" src={gif.url} key={gif.url+gif.timeFraction}
-            width={75} height={50}
+            width={75} height={50} playing={false}
             style={{marginLeft: gif.timeFraction*100 + "%"}}
           />)
         }
