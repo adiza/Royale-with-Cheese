@@ -7,6 +7,8 @@ import GifDisplay from './components/GifDisplay';
 import GifBar from './components/GifBar';
 import {Rnd} from 'react-rnd';
 
+const SERVER_ADDRESS = "http://gif-backend.herokuapp.com";
+
 class App extends Component {
   constructor(props) {
     super(props);
@@ -32,6 +34,14 @@ class App extends Component {
     document.removeEventListener('keydown', this.handleEsc, false);
   }
 
+  componentDidMount() {
+    fetch(SERVER_ADDRESS+'/videos', {
+      method: 'post', cache: 'no-cache', cors: 'cors',
+      headers: { "Content-Type": "application/json; charset=utf-8", },
+      body: JSON.stringify({videoId: this.state.videoId}),
+    });
+  }
+
   handleEsc = (event) => {
     if (event.key === "Escape") {
       this.setState({showGifSearch: false});
@@ -52,6 +62,8 @@ class App extends Component {
   }
 
   fetchGifs = () => {
+    fetch(SERVER_ADDRESS+'/gifs?videoId='+this.state.videoId)
+      .then((response) => console.log(JSON.stringify(response.json())));
     const result = [
       {url: 'https://media.giphy.com/media/2bV8SBlxOiU2NityCb/giphy.gif',
         time: 10.1, fracX: 0.1, fracY: 0.5},
@@ -135,7 +147,14 @@ class App extends Component {
   }
 
   postNewGif = (gifInfo) => {
-    // TODO
+    fetch(SERVER_ADDRESS+'/gifs', {
+      method: 'post', cache: 'no-cache', cors: 'cors',
+      headers: { "Content-Type": "application/json; charset=utf-8", },
+      body: JSON.stringify({videoId: gifInfo.videoId,
+        gifId: gifInfo.url, gifTimestamp: gifInfo.timeFraction,
+        fracX: gifInfo.fracX, fracY: gifInfo.fracY
+      }),
+    });
   }
 
   saveNewGif = () => {

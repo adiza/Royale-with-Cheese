@@ -31,7 +31,7 @@ class SearchGiphy extends Component {
   }
 
   componentDidUpdate(prevProps, prevState) {
-    if (prevProps.open == this.props.open || !this.props.open) {
+    if (prevProps.open === this.props.open || !this.props.open) {
       return;
     }
     this.queryInput.current.focus();
