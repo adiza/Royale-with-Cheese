@@ -21,34 +21,25 @@ class SearchGiphy extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      currentText: " ",
-      data: null,
       query: '',
-      value: null,
       results: [],
-      searched: true
+      searchTimeoutId: null,
     }
-    this.handleChange = this.handleChange.bind(this);
-    this.handleClick = this.handleClick.bind(this);
   }
 
-  handleClick(event) {
-    event.preventDefault();
+  handleSearch = () => {
     searchGifs(this.state.query, (gifs) => {
       // redefine our app's state to include populated response
-      this.setState({
-        results: gifs,
-        searched: true // flip the switch
-      });
+      this.setState({ results: gifs });
     });
   }
 
-  handleChange(event){
-    this.setState({query: event.target.value});
-  }
-
-  changeText(currentText) {
-    this.setState({currentText});
+  handleChange = (event) => {
+    this.setState({ query: event.target.value });
+    if (this.searchTimeoutId) {
+      clearTimeout(this.searchTimeoutId);
+    }
+    this.setState({ searchTimeoutId: setTimeout(this.handleSearch, 500) });
   }
 
   render() {
@@ -57,8 +48,7 @@ class SearchGiphy extends Component {
         <Results searchResults={this.state.results} onGifClick={this.props.onGifClick}/>
 
         <div className="search-box">
-          <input type="text" placeholder={"enter a search term"} value={this.state.value} onChange={this.handleChange}/>
-          <button onClick={this.handleClick} className="btn btn-primary">Search</button>
+          <input type="text" placeholder={"enter a search term"} value={this.state.query} onChange={this.handleChange}/>
           <button type="button" className="btn btn-primary" onClick={this.props.closeGif}> CLOSE </button>
         </div>
       </div>
