@@ -2,6 +2,9 @@
   width: 100%;
   display: flex;
   flex-wrap: wrap;
-  height: 360px;
-  overflow-y: scroll;
+  overflow-y: auto;
+}
+
+.search-result-gif {
+  cursor: pointer;
 }

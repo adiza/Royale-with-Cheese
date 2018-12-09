@@ -10,4 +10,15 @@
 
 .giphy-search {
   border-radius: 0.5em;
+  width: 400px;
+  max-height: 100%;
+  background: white;
+}
+
+.search-title {
+  padding: 0.5em 0.5em 0.2em 0.5em;
+}
+
+.Results {
+  height: 200px;
 }

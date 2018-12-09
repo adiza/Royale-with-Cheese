@@ -29,11 +29,7 @@
 }
 
 .giphy-search {
-  z-index: 100;
-  background: white;
   position: absolute;
   right: 10px;
   bottom: 10px;
-  width: 400px;
-  max-height: 400px;
 }

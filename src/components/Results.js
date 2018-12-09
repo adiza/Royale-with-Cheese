@@ -7,7 +7,8 @@ class Results extends Component{
     return (
       <div className="Results">
         {this.props.searchResults.map((item, index) => (
-          <img key={index} src={item.images.fixed_height_small.url}
+          <img className="search-result-gif"
+            key={index} src={item.images.fixed_height_small.url}
             onClick={() => this.props.onGifClick(item)} />
           )
         )}

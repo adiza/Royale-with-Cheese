@@ -57,12 +57,14 @@ class SearchGiphy extends Component {
     }
     return (
       <div className="giphy-search">
+        <h5 className="search-title">
+          {this.state.query ? "Search results" : "Previously used gifs" }
+        </h5>
         <Results searchResults={this.state.results} onGifClick={this.props.onGifClick}/>
 
         <div className="search-box">
           <input type="text" placeholder={"enter a search term"} value={this.state.query}
-            onChange={this.handleChange} ref={this.queryInput}
-            className="query-input"/>
+            onChange={this.handleChange} ref={this.queryInput} className="query-input"/>
         </div>
       </div>
     );
@@ -72,6 +74,7 @@ class SearchGiphy extends Component {
 SearchGiphy.propTypes = {
   open: PropTypes.bool.isRequired,
   onGifClick: PropTypes.func.isRequired,
+  closeGifSearch: PropTypes.func,
 };
 
 export default SearchGiphy;

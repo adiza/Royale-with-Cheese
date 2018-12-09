@@ -22,10 +22,19 @@ class App extends Component {
     this.searchDiv = React.createRef();
 
     document.addEventListener('mousedown', this.handleDocumentClick, false);
+    document.addEventListener('keydown', this.handleEsc, false);
   }
 
   componentWillUnmount() {
     document.removeEventListener('mousedown', this.handleDocumentClick, false);
+    document.removeEventListener('keydown', this.handleEsc, false);
+  }
+
+  handleEsc = (event) => {
+    console.log(event.key);
+    if (event.key === "Escape") {
+      this.setState({showGifSearch: false});
+    }
   }
 
   handleDocumentClick = (event) => {
@@ -162,7 +171,8 @@ class App extends Component {
               : ''
           }
           <div ref={this.searchDiv}>
-            <SearchGiphy onGifClick={this.addNewGif} open={this.state.showGifSearch} />
+            <SearchGiphy onGifClick={this.addNewGif}
+              open={this.state.showGifSearch} closeGifSearch={this.closeGifSearch}/>
           </div>
           {this.state.gifs.map(gif =>
             <GifDisplay gif={gif} key={gif.url+gif.timeFraction}
