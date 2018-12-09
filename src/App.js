@@ -162,14 +162,13 @@ class App extends Component {
               : ''
           }
           <div ref={this.searchDiv}>
-            <SearchGiphy onGifClick={this.addNewGif} closeGif={this.closeGifSearch}
-              open={this.state.showGifSearch} />
+            <SearchGiphy onGifClick={this.addNewGif} open={this.state.showGifSearch} />
           </div>
           {this.state.gifs.map(gif =>
             <GifDisplay gif={gif} key={gif.url+gif.timeFraction}
               playing={gif.playing} onEnd={() => this.gifEnded(gif)}/>)}
         </div>
-        <GifBar gifs={this.state.gifs} onAddGif={this.showGifSearch} closeGif={this.closeGifSearch}/>
+        <GifBar gifs={this.state.gifs} onAddGif={this.showGifSearch} />
          
         {this.state.newGif ? 
           <button type="button" className="btn btn-primary"

@@ -1,0 +1,13 @@
+.query-input {
+  border: none;
+  border-top: solid 1px lightgrey;
+  padding: 0.5em;
+  width: 100%;
+  border-bottom-left-radius: 0.5em;
+  border-bottom-right-radius: 0.5em;
+  outline: none;
+}
+
+.giphy-search {
+  border-radius: 0.5em;
+}

@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import Results from './Results.js'
 import PropTypes from 'prop-types';
+import './searchGiphy.css';
 
 const searchGifs = (query, callback) => {
   // http://api.giphy.com/v1/gifs/search?q=funny+cat&api_key=dc6zaTOxFJmzC
@@ -60,8 +61,8 @@ class SearchGiphy extends Component {
 
         <div className="search-box">
           <input type="text" placeholder={"enter a search term"} value={this.state.query}
-            onChange={this.handleChange} ref={this.queryInput}/>
-          <button type="button" className="btn btn-primary" onClick={this.props.closeGif}> CLOSE </button>
+            onChange={this.handleChange} ref={this.queryInput}
+            className="query-input"/>
         </div>
       </div>
     );
