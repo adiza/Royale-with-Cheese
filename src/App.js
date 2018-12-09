@@ -11,7 +11,7 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.state = { 
-      currentGif: null,
+      currentGifs: [],
       gifs: [],
       videoId: this.props.urlParams.get("id"),
       videoDuration: null,
@@ -30,6 +30,8 @@ class App extends Component {
 
   fetchGifs = () => {
     const result = [
+      {url: 'https://media.giphy.com/media/2bV8SBlxOiU2NityCb/giphy.gif',
+        time: 10.1, fracX: 0.1, fracY: 0.5},
       {url: 'https://media.giphy.com/media/2bV8SBlxOiU2NityCb/giphy.gif',
         time: 10.3, fracX: 0.5, fracY: 0.1},
       {url: 'https://media.giphy.com/media/Bo0ZNexSCyy9JyOXbW/giphy.gif',
@@ -50,8 +52,9 @@ class App extends Component {
       .all([this.fetchGifs(), this.getVideoDuration()])
       .then(([gifs, duration]) => {
         this.setState({
-          gifs: this.addRelativeTimes(gifs, duration),
-          videoDuration: duration
+          gifs: (this.addRelativeTimes(gifs, duration)
+            .sort((a, b) => (a.time - b.time))),
+          videoDuration: duration,
         })
       });
   }
@@ -61,19 +64,33 @@ class App extends Component {
       .getCurrentTime()
       .then((time) => {
         this.setState({currentVideoTime: time})
+        let gifsToAdd = [];
         this.state.gifs.forEach((gif) => {
-          if (Math.abs(time - gif.time) < 0.15) {
-            this.setState({currentGif: gif});
+          if (Math.abs(time - gif.time) < 0.15 &&
+            !this.state.currentGifs.includes(gif)) {
+            gifsToAdd.push(gif);
           }
         });
+        this.setState(({currentGifs}) =>
+          ({currentGifs: currentGifs.concat(gifsToAdd)}));
       });
   }
 
-  gifEnded = () => { this.setState({currentGif: null}); }
+  gifEnded = (gif) => {
+    this.setState(({currentGifs}) => {
+      const gif_index = this.state.currentGifs.indexOf(gif);
+      if (gif_index === -1) {
+        return currentGifs;
+      }
+      return {currentGifs: [
+        ...currentGifs.slice(0, gif_index),
+        ...currentGifs.slice(gif_index+1)
+      ]};
+    });
+  }
+
   showGifSearch = () => { this.setState({showGifSearch: true}); }
   closeGifSearch = () => { this.setState({showGifSearch: false}); }
-
-
 
   addNewGif = (gif) => {
     this.setState({newGif: gif, showGifSearch: false});
@@ -86,7 +103,7 @@ class App extends Component {
 
   saveNewGif = () => {
     const gif = this.state.newGif;
-    const url =  `https://media.giphy.com/media/${gif.id}/giphy.gif`;
+    const url = `https://media.giphy.com/media/${gif.id}/giphy.gif`;
     const time = this.state.currentVideoTime;
     const videoId = this.state.videoId;
     const videoRect = ReactDOM.findDOMNode(this.player.current).children[0]
@@ -125,7 +142,9 @@ class App extends Component {
               </Rnd>
               : ''}
           {this.state.showGifSearch ? <SearchGiphy onGifClick={this.addNewGif} closeGif={this.closeGifSearch}/> : '' }
-          <GifDisplay gif={this.state.currentGif} onEnd={this.gifEnded}/>
+          {this.state.currentGifs.map((gif) =>
+            <GifDisplay gif={gif} key={gif.url+gif.timeFraction}
+              onEnd={() => this.gifEnded(gif)}/>)}
         </div>
         <GifBar gifs={this.state.gifs} onAddGif={this.showGifSearch} closeGif={this.closeGifSearch}/>
          
