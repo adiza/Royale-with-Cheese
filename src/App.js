@@ -36,11 +36,13 @@ class App extends Component {
   }
 
   componentDidMount() {
-    fetch(SERVER_ADDRESS+'/videos', {
-      method: 'post', cache: 'no-cache', cors: 'cors',
-      headers: { "Content-Type": "application/json; charset=utf-8", },
-      body: JSON.stringify({videoId: this.state.videoId}),
-    });
+    if (this.state.videoId) {
+      fetch(SERVER_ADDRESS+'/videos', {
+        method: 'post', cache: 'no-cache', cors: 'cors',
+        headers: { "Content-Type": "application/json; charset=utf-8", },
+        body: JSON.stringify({videoId: this.state.videoId}),
+      });
+    }
   }
 
   handleEsc = (event) => {
@@ -50,6 +52,9 @@ class App extends Component {
   }
 
   handleDocumentClick = (event) => {
+    if (!this.state.videoId) {
+      return;
+    }
     if (!this.showGifSearch || this.searchDiv.current.contains(event.target)) {
       return;
     }
@@ -181,10 +186,12 @@ class App extends Component {
     return (
       <div className="App container">
         <div className="videoFrame">
-          <YouTube videoId={this.state.videoId} opts={{width: '100%', height: '100%'}}
+          <YouTube videoId={this.state.videoId}
+            opts={{width: '100%', height: '100%', playerVars: {autoplay: 1}}}
             ref={this.player} onReady={this.onPlayerReady} />
           {this.state.newGif ?
               <Rnd enableResizing={false} height="100px" bounds="parent"
+                enableUserSelectHack={false}
                 onDragStop={(e, d) => { this.setState({newGifX: d.x, newGifY: d.y}) }}>
                 <img src={this.state.newGif.images.fixed_height_small.url} />
               </Rnd>
