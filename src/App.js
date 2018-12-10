@@ -19,6 +19,7 @@ class App extends Component {
       newGif: null,
       newGifX: 0, newGifY: 0,
       previouslyUsedGifs: JSON.parse(localStorage.getItem("usedGifs")) || [],
+      showGifSearch: false,
     };
 
     this.player = React.createRef();
@@ -55,26 +56,18 @@ class App extends Component {
     this.setState({showGifSearch: false});
   }
 
-  addRelativeTimes = (gifs, duration) => {
-    return gifs.map((gif) => Object.assign(
-      {timeFraction: gif.time/duration},
-      gif));
+  serverGifToLocal = (gif) => {
+    return {
+      url: gif.gifId,
+      timeFraction: gif.timestamp,
+      fracX: gif.fracX, fracY: gif.fracY,
+    };
   }
 
   fetchGifs = () => {
-    fetch(SERVER_ADDRESS+'/gifs?videoId='+this.state.videoId)
-      .then((response) => console.log(JSON.stringify(response.json())));
-    const result = [
-      {url: 'https://media.giphy.com/media/2bV8SBlxOiU2NityCb/giphy.gif',
-        time: 10.1, fracX: 0.1, fracY: 0.5},
-      {url: 'https://media.giphy.com/media/2bV8SBlxOiU2NityCb/giphy.gif',
-        time: 10.3, fracX: 0.5, fracY: 0.1},
-      {url: 'https://media.giphy.com/media/Bo0ZNexSCyy9JyOXbW/giphy.gif',
-        time: 20, fracX: 0.1, fracY: 0.1},
-      {url: 'https://media.giphy.com/media/l4tUX3sa1D9ndNcQg/giphy.gif',
-        time: 50, fracX: 0.2, fracY: 0.2}
-    ];
-    return new Promise((resolve, reject) => resolve(result));
+    return fetch(SERVER_ADDRESS+'/gifs?videoId='+this.state.videoId)
+      .then((response) => response.json())
+      .then((json) => json.gifs.map(this.serverGifToLocal));
   }
 
   getVideoDuration = (callback) => {
@@ -87,8 +80,7 @@ class App extends Component {
       .all([this.fetchGifs(), this.getVideoDuration()])
       .then(([gifs, duration]) => {
         this.setState({
-          gifs: (this.addRelativeTimes(gifs, duration)
-            .sort((a, b) => (a.time - b.time))),
+          gifs: (gifs.sort((a, b) => (a.timeFraction - b.timeFraction))),
           videoDuration: duration,
         })
       });
@@ -100,10 +92,10 @@ class App extends Component {
       .getCurrentTime()
       .then((time) => {
         this.setState({currentVideoTime: time})
-        this.setState(({gifs}) => {
+        this.setState(({gifs, videoDuration}) => {
           return {
             gifs: gifs.map((gif) => {
-              if (Math.abs(time - gif.time) < 0.15) {
+              if (Math.abs(time - gif.timeFraction*videoDuration) < 0.15) {
                 return Object.assign(gif, {playing: true})
               }
               return gif;
