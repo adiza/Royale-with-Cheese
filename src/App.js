@@ -153,8 +153,11 @@ class App extends Component {
     });
   }
 
-  showGifSearch = () => { this.setState({showGifSearch: true}); }
+  toggleGifSearch = () => {
+    this.setState(({showGifSearch}) => ({showGifSearch: !showGifSearch}));
+  }
   closeGifSearch = () => { this.setState({showGifSearch: false}); }
+  handleCancel = () => { this.setState({newGif: null, showGifSearch: false}); }
 
   addNewGif = (gif) => {
     this.setState(({previouslyUsedGifs}) => {
@@ -213,10 +216,23 @@ class App extends Component {
       <div className="App container">
         <div className="header">
           <h1>Gifgif</h1>
-          <button type="button" className="btn btn-primary add-gif-button"
-            onClick={this.showGifSearch}>
-            Add gif
-          </button>
+          {this.state.newGif ?
+            <button type="button" className="btn btn-primary save-gif-button"
+              onClick={this.saveNewGif}>
+              Save
+            </button> 
+              : ''
+          }
+          {this.state.showGifSearch || this.state.newGif ?
+              <button type="button" className="btn btn-danger add-gif-button"
+                onClick={this.handleCancel}>
+                Cancel
+              </button> :
+              <button type="button" className="btn btn-primary add-gif-button"
+                onClick={this.toggleGifSearch}>
+                Add gif
+              </button>
+          }
         </div>
         <div className="videoFrame" onMouseMove={this.onMouseMove}>
           <YouTube videoId={this.state.videoId}
@@ -241,13 +257,6 @@ class App extends Component {
             <GifDisplay gif={gif} key={gif.url+gif.timeFraction}
               playing={gif.playing} onEnd={() => this.gifEnded(gif)}/>)}
         </div>
-         
-        {this.state.newGif ? 
-          <button type="button" className="btn btn-primary"
-            onClick={this.saveNewGif}>
-            Save
-          </button> 
-            : ''}
       </div>
     );
   }

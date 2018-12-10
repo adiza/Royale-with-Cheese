@@ -50,6 +50,13 @@
   right: 0;
 }
 
+.save-gif-button {
+  float: right;
+  height: 40px;
+  top: 5px;
+  margin: 0 10px;
+}
+
 .header {
   width: 100%;
   height: 50px;

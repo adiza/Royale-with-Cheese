@@ -26,7 +26,7 @@
 
 .loading {
   animation: blinker 2s ease infinite;
-  color: lightgrey;
+  color: grey;
 }
 
 @keyframes blinker {
