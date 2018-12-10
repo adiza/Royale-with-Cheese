@@ -9,8 +9,8 @@ class GifDisplay extends React.Component {
     }
     return (
       <Gif className="gif-player" src={this.props.gif.url} alt="gif"
-        style={{left: this.props.gif.fracX*100 + '%',
-          top: this.props.gif.fracY*100 + '%',
+        style={{left: this.props.gif.positionX,
+          top: this.props.gif.positionY,
           visibility: this.props.playing ? 'visible' : 'hidden',
         }}
         playing={this.props.playing}

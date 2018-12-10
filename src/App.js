@@ -8,6 +8,7 @@ import GifBar from './components/GifBar';
 import {Rnd} from 'react-rnd';
 
 const SERVER_ADDRESS = "http://gif-backend.herokuapp.com";
+const VIDEO_INFO_ADDRESS = "http://noembed.com/embed?url=https%3A%2F%2Fwww.youtube.com%2Fwatch%3Fv%3D";
 
 class App extends Component {
   constructor(props) {
@@ -15,6 +16,7 @@ class App extends Component {
     this.state = { 
       gifs: [],
       videoId: this.props.urlParams.get("id"),
+      videoInfo: null,
       videoDuration: null,
       videoPlaying: false,
       newGif: null,
@@ -26,16 +28,17 @@ class App extends Component {
     };
 
     this.player = React.createRef();
-    this.gifPlayer = React.createRef();
     this.searchDiv = React.createRef();
 
     document.addEventListener('mousedown', this.handleDocumentClick, false);
     document.addEventListener('keydown', this.handleEsc, false);
+    window.addEventListener('resize', this.onWindowResize, false);
   }
 
   componentWillUnmount() {
     document.removeEventListener('mousedown', this.handleDocumentClick, false);
     document.removeEventListener('keydown', this.handleEsc, false);
+    window.removeEventListener('resize', this.onWindowResize, false);
     clearInterval(this.intervalId);
   }
 
@@ -46,6 +49,9 @@ class App extends Component {
         headers: { "Content-Type": "application/json; charset=utf-8", },
         body: JSON.stringify({videoId: this.state.videoId}),
       });
+      fetch(VIDEO_INFO_ADDRESS+this.state.videoId)
+        .then(response => response.json())
+        .then(json => this.setState({videoInfo: json}));
     }
   }
 
@@ -89,7 +95,8 @@ class App extends Component {
       .all([this.fetchGifs(), this.getVideoDuration()])
       .then(([gifs, duration]) => {
         this.setState({
-          gifs: (gifs.sort((a, b) => (a.timeFraction - b.timeFraction))),
+          gifs: (this.computeGifPositions(gifs)
+            .sort((a, b) => (a.timeFraction - b.timeFraction))),
           videoDuration: duration,
         })
       });
@@ -124,14 +131,15 @@ class App extends Component {
       .then((time) => {
         this.setState({currentVideoTime: time})
         this.setState(({gifs, videoDuration}) => {
-          return {
-            gifs: gifs.map((gif) => {
-              if (Math.abs(time - gif.timeFraction*videoDuration) < 0.15) {
-                return Object.assign(gif, {playing: true})
-              }
-              return gif;
-            })
-          }
+          let anythingChanged = false;
+          const newGifs = gifs.map((gif) => {
+            if (Math.abs(time - gif.timeFraction*videoDuration) < 0.15) {
+              anythingChanged = true;
+              return Object.assign(gif, {playing: true})
+            }
+            return gif;
+          })
+          if (anythingChanged) { return { gifs: newGifs }; }
         });
       });
     } catch (e) {
@@ -183,16 +191,47 @@ class App extends Component {
     });
   }
 
+  getRealVideoDimensions = () => {
+    const videoRect = ReactDOM.findDOMNode(this.player.current).children[0]
+      .getBoundingClientRect();
+    const scale = Math.min(videoRect.width / this.state.videoInfo.width,
+      videoRect.height / this.state.videoInfo.height);
+    return { width: scale*this.state.videoInfo.width,
+      height: scale*this.state.videoInfo.height };
+  }
+
+  computeGifPositions = (gifList) => {
+    const realDimensions = this.getRealVideoDimensions();
+    const videoRect = ReactDOM.findDOMNode(this.player.current).children[0]
+      .getBoundingClientRect();
+    return gifList.map(gif => {
+      const positionX = Math.min(
+        gif.fracX*realDimensions.width+videoRect.width/2,
+        videoRect.width-100);
+      const positionY = Math.min(
+        gif.fracY*realDimensions.height+videoRect.height/2,
+        videoRect.height-100);
+      return {...gif, positionX, positionY};
+    });
+  }
+
+  updateGifPositions = () => {
+    this.setState(({gifs}) => ({ gifs: this.computeGifPositions(gifs) }));
+  }
+
+  onWindowResize = () => {console.log('ha'); this.updateGifPositions(); }
+
   saveNewGif = () => {
     const gif = this.state.newGif;
     const url = `https://media.giphy.com/media/${gif.id}/giphy.gif`;
     const time = this.state.currentVideoTime;
     const videoId = this.state.videoId;
-    const videoRect = ReactDOM.findDOMNode(this.player.current).children[0]
-      .getBoundingClientRect();
-    const fracX = this.state.newGifX / videoRect.width;
-    const fracY = this.state.newGifY / videoRect.height;
+    const realDimensions = this.getRealVideoDimensions();
+    const fracX = this.state.newGifX / realDimensions.width - 0.5;
+    const fracY = this.state.newGifY / realDimensions.height - 0.5;
     const toSave = {url, time, videoId, fracX, fracY,
+      positionX: this.state.newGifX,
+      positionY: this.state.newGifY,
       timeFraction: time/this.state.videoDuration
     };
     this.postNewGif(toSave);
