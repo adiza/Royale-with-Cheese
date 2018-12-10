@@ -67,18 +67,18 @@ class SearchGiphy extends Component {
     }
     return (
       <div className="giphy-search">
-        <h5 className="search-title">
-          {this.state.query ? "Search results" : "Previously used gifs" }
-          {this.state.loading ? <span className="loading">  loading</span> : ""}
-        </h5>
-        <Results searchResults={this.state.query ?
-            this.state.results : this.props.previouslyUsedGifs }
-          onGifClick={this.props.onGifClick}/>
-
         <div className="search-box">
           <input type="text" placeholder={"enter a search term"} value={this.state.query}
             onChange={this.handleChange} ref={this.queryInput} className="query-input"/>
         </div>
+        <Results searchResults={this.state.query ?
+            this.state.results : this.props.previouslyUsedGifs }
+          onGifClick={this.props.onGifClick}/>
+        <h5 className="search-title">
+          Choose a gif
+          {this.state.loading ? <span className="loading">  loading</span> : ""}
+        </h5>
+
       </div>
     );
   }

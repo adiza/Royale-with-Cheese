@@ -16,10 +16,13 @@ class App extends Component {
       gifs: [],
       videoId: this.props.urlParams.get("id"),
       videoDuration: null,
+      videoPlaying: false,
       newGif: null,
       newGifX: 0, newGifY: 0,
       previouslyUsedGifs: JSON.parse(localStorage.getItem("usedGifs")) || [],
       showGifSearch: false,
+      showAddGif: false,
+      showGifBar: true,
     };
 
     this.player = React.createRef();
@@ -90,6 +93,28 @@ class App extends Component {
           videoDuration: duration,
         })
       });
+  }
+
+  onPlayerStateChange = (event) => {
+    if (event.data === 1) { // playing
+      this.setState({videoPlaying: true});
+      clearTimeout(this.gifBarTimeoutId);
+      this.gifBarTimeoutId = setTimeout(
+        () => this.setState({showGifBar: false}), 4000);
+    } else {
+      this.setState({showGifBar: true, videoPlaying: false});
+      clearTimeout(this.gifBarTimeoutId);
+    }
+  }
+
+  onMouseMove = (event) => {
+    if (!this.state.videoPlaying) {
+      return;
+    }
+    clearTimeout(this.gifBarTimeoutId);
+    this.setState({showGifBar: true});
+    this.gifBarTimeoutId = setTimeout(
+        () => this.setState({showGifBar: false}), 2000);
   }
 
   timer = () => {
@@ -186,10 +211,18 @@ class App extends Component {
     }
     return (
       <div className="App container">
-        <div className="videoFrame">
+        <div className="header">
+          <h1>Gifgif</h1>
+          <button type="button" className="btn btn-primary add-gif-button"
+            onClick={this.showGifSearch}>
+            Add gif
+          </button>
+        </div>
+        <div className="videoFrame" onMouseMove={this.onMouseMove}>
           <YouTube videoId={this.state.videoId}
             opts={{width: '100%', height: '100%', playerVars: {autoplay: 1}}}
-            ref={this.player} onReady={this.onPlayerReady} />
+            ref={this.player} onReady={this.onPlayerReady}
+            onStateChange={this.onPlayerStateChange} />
           {this.state.newGif ?
               <Rnd enableResizing={false} height="100px" bounds="parent"
                 enableUserSelectHack={false}
@@ -198,6 +231,7 @@ class App extends Component {
               </Rnd>
               : ''
           }
+          <GifBar gifs={this.state.gifs} showMarkers={this.state.showGifBar}/>
           <div ref={this.searchDiv}>
             <SearchGiphy onGifClick={this.addNewGif}
               previouslyUsedGifs={this.state.previouslyUsedGifs}
@@ -207,14 +241,12 @@ class App extends Component {
             <GifDisplay gif={gif} key={gif.url+gif.timeFraction}
               playing={gif.playing} onEnd={() => this.gifEnded(gif)}/>)}
         </div>
-        <GifBar gifs={this.state.gifs} onAddGif={this.showGifSearch} />
          
         {this.state.newGif ? 
           <button type="button" className="btn btn-primary"
             onClick={this.saveNewGif}>
             Save
           </button> 
-         
             : ''}
       </div>
     );
