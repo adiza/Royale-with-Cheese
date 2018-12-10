@@ -33,6 +33,7 @@ class App extends Component {
   componentWillUnmount() {
     document.removeEventListener('mousedown', this.handleDocumentClick, false);
     document.removeEventListener('keydown', this.handleEsc, false);
+    clearInterval(this.intervalId);
   }
 
   componentDidMount() {
@@ -80,7 +81,7 @@ class App extends Component {
   }
 
   onPlayerReady = () => {
-    this.setState({intervalId: setInterval(this.timer, 100)});
+    this.intervalId = setInterval(this.timer, 100);
     Promise
       .all([this.fetchGifs(), this.getVideoDuration()])
       .then(([gifs, duration]) => {
@@ -109,7 +110,7 @@ class App extends Component {
         });
       });
     } catch (e) {
-      clearInterval(this.state.intervalId);
+      clearInterval(this.intervalId);
     }
   }
 

@@ -25,9 +25,9 @@ class SearchGiphy extends Component {
       query: '',
       loading: false,
       results: [],
-      searchTimeoutId: null,
     }
     this.queryInput = React.createRef();
+    this.searchTimeoutId = null;
   }
 
   componentDidUpdate(prevProps, prevState) {
@@ -35,6 +35,10 @@ class SearchGiphy extends Component {
       return;
     }
     this.queryInput.current.focus();
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.intervalId);
   }
 
   handleSearch = () => {
@@ -46,14 +50,12 @@ class SearchGiphy extends Component {
 
   handleChange = (event) => {
     this.setState({ query: event.target.value });
-    if (this.searchTimeoutId) {
+    if (this.searchTimeoutId === null) {
       clearTimeout(this.searchTimeoutId);
     }
     if (event.target.value !== '') {
-      this.setState({
-        loading: true,
-        searchTimeoutId: setTimeout(this.handleSearch, 1500)
-      });
+      this.searchTimeoutId = setTimeout(this.handleSearch, 1500);
+      this.setState({ loading: true, });
     } else {
       this.setState({ loading: false });
     }
