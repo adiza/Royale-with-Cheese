@@ -22,6 +22,7 @@ class App extends Component {
       newGif: null,
       newGifX: 0, newGifY: 0,
       newGifSize: {width: false, height: false},
+      newGifDuration: 'once',
       previouslyUsedGifs: JSON.parse(localStorage.getItem("usedGifs")) || [],
       showGifSearch: false,
       showAddGif: false,
@@ -79,6 +80,7 @@ class App extends Component {
       timeFraction: gif.timestamp,
       fracX: gif.fracX, fracY: gif.fracY,
       serverId: gif._id, scale: gif.scale,
+      duration: gif.duration,
     };
   }
 
@@ -191,6 +193,7 @@ class App extends Component {
       body: JSON.stringify({videoId: gifInfo.videoId,
         gifId: gifInfo.url, gifTimestamp: gifInfo.timeFraction,
         fracX: gifInfo.fracX, fracY: gifInfo.fracY, scale: gifInfo.scale,
+        duration: gifInfo.duration,
       }),
     });
   }
@@ -237,7 +240,8 @@ class App extends Component {
     const fracY = (this.state.newGifY - videoRect.height/2) / realDimensions.height;
     const scale = this.newGifRnd.current.getBoundingClientRect().width /
       realDimensions.width;
-    const toSave = {url, time, videoId, fracX, fracY, scale,
+    const duration = this.state.newGifDuration;
+    const toSave = {url, time, videoId, fracX, fracY, scale, duration,
       positionX: this.state.newGifX,
       positionY: this.state.newGifY,
       timeFraction: time/this.state.videoDuration,
@@ -249,6 +253,7 @@ class App extends Component {
       newGif: null,
       newGifX: 0, newGifY: 0,
       newGifSize: {width: false, height: false},
+      newGifDuration: 'once',
     });
   }
 
@@ -266,10 +271,10 @@ class App extends Component {
         <div className="header">
           <h1>Gifgif</h1>
           {this.state.newGif ?
-            <button type="button" className="btn btn-success save-gif-button"
-              onClick={this.saveNewGif}>
-              Save
-            </button> 
+              <button type="button" className="btn btn-success save-gif-button"
+                onClick={this.saveNewGif}>
+                Save
+              </button> 
               : ''
           }
           {this.state.showGifSearch || this.state.newGif ?
@@ -281,6 +286,23 @@ class App extends Component {
                 onClick={this.toggleGifSearch}>
                 Add gif
               </button>
+          }
+          {this.state.newGif &&
+              <div className="choose-duration">
+                <span className="play-label">Play gif</span>
+                <div className="btn-group btn-group-toggle" data-toggle="buttons">
+                  <button className={"btn btn-sm btn-primary "
+                      +(this.state.newGifDuration==='once' ? "active" : "")}
+                      onClick={()=>this.setState({newGifDuration: 'once'})}>
+                      once
+                    </button>
+                    <button className={"btn btn-sm btn-primary"
+                        +(this.state.newGifDuration!=='once' ? " active" : "")}
+                        onClick={()=>this.setState({newGifDuration: '5sec'})}>
+                        for 5 seconds
+                      </button>
+                    </div>
+                  </div>
           }
         </div>
         <div className="videoFrame" onMouseMove={this.onMouseMove}>
