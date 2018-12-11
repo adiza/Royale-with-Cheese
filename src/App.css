@@ -87,3 +87,25 @@
   top: 0;
   left: 0;
 }
+
+.videos-list {
+  position: absolute;
+  right: 0;
+  top: 0;
+  height: 1vh;
+  z-index: 100;
+}
+
+.show-videos-list {
+  float: right;
+  margin: 7px 0;
+  margin-left: 20px;
+  background:none!important;
+  color:inherit;
+  border:none; 
+  padding:0!important;
+  font: inherit;
+  /*border is optional*/
+  border-bottom: 1px solid rgb(200, 200, 200);
+  cursor: pointer;
+}

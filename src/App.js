@@ -5,10 +5,9 @@ import ReactDOM from 'react-dom';
 import SearchGiphy from './components/searchGiphy.js'
 import GifDisplay from './components/GifDisplay';
 import GifBar from './components/GifBar';
+import VideosList from './components/VideosList';
 import {Rnd} from 'react-rnd';
-
-const SERVER_ADDRESS = "http://gif-backend.herokuapp.com";
-const VIDEO_INFO_ADDRESS = "http://noembed.com/embed?url=https%3A%2F%2Fwww.youtube.com%2Fwatch%3Fv%3D";
+import { SERVER_ADDRESS, VIDEO_INFO_ADDRESS } from './constants';
 
 class App extends Component {
   constructor(props) {
@@ -27,6 +26,7 @@ class App extends Component {
       showGifSearch: false,
       showAddGif: false,
       showGifBar: true,
+      showVideosList: false,
     };
 
     this.player = React.createRef();
@@ -268,8 +268,15 @@ class App extends Component {
     }
     return (
       <div className="App container">
+        {this.state.showVideosList &&
+            <VideosList onHide={() => this.setState({showVideosList: false})}/>
+        }
         <div className="header">
           <h1>Gifgif</h1>
+          <button className="show-videos-list"
+            onClick={() => this.setState({showVideosList: true})}>
+            Other videos
+          </button>
           {this.state.newGif ?
               <button type="button" className="btn btn-success save-gif-button"
                 onClick={this.saveNewGif}>

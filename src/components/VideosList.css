@@ -1,0 +1,19 @@
+.videos-list {
+  height: 100%;
+  width: 300px;
+  background: black;
+  border-left: 5px solid white;
+  padding: 10px;
+  overflow-y: auto;
+}
+
+.hide-link {
+  background:none!important;
+  color:inherit;
+  border:none; 
+  padding:0!important;
+  font: inherit;
+  /*border is optional*/
+  border-bottom: 1px solid rgb(200, 200, 200);
+  cursor: pointer;
+}
