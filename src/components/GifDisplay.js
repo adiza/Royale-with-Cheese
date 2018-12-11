@@ -14,8 +14,9 @@ class GifDisplay extends React.Component {
           top: this.props.gif.positionY,
           visibility: this.props.playing ? 'visible' : 'hidden',
         }}
-        playing={this.props.playing}
-        width={this.props.width} loop={false} onEnd={this.props.onEnd}
+        playing={this.props.playing} duration={this.props.gif.duration}
+        width={this.props.width} loop={this.props.gif.duration!=='once'}
+        onEnd={this.props.onEnd}
       />
     );
   }

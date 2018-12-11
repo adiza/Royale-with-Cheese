@@ -6,10 +6,17 @@ class Gif extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      isReady: false
+      isReady: false,
     };
 
     this.element = React.createRef();
+    this.timeoutId = null;
+  }
+
+  onEnd = () => {
+    if (this.props.duration === 'once') {
+      this.props.onEnd();
+    }
   }
 
   componentDidMount() {
@@ -18,7 +25,7 @@ class Gif extends Component {
       auto_play: this.props.playing,
       progressbar_height: 0,
       loop_mode: this.props.loop,
-      on_end: this.props.onEnd,
+      on_end: this.onEnd,
       max_width: this.props.width,
     });
     this.wrapper.load(() => this.setState({isReady: true}));
@@ -31,8 +38,12 @@ class Gif extends Component {
     if (this.props.playing) {
       this.wrapper.move_to(0);
       this.wrapper.play();
+      if (this.props.duration === '5sec') {
+        this.timeoutId = setTimeout(() => { this.props.onEnd(); }, 5000);
+      }
     } else {
       this.wrapper.pause();
+      clearTimeout(this.timeoutId);
     }
   }
 
@@ -56,6 +67,7 @@ Gif.defaultProps = {
   loop: false,
   width: null,
   height: null,
+  duration: 'once',
 };
 
 Gif.propTypes = {
@@ -65,6 +77,7 @@ Gif.propTypes = {
   loop: PropTypes.bool,
   width: PropTypes.number,
   height: PropTypes.number,
+  duration: PropTypes.string,
 };
 
 export default Gif;
