@@ -5,6 +5,10 @@
   overflow-y: auto;
 }
 
+.Results img {
+  max-height: 100px;
+}
+
 .search-result-gif {
   cursor: pointer;
 }

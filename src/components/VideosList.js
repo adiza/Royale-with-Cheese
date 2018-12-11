@@ -17,7 +17,8 @@ class VideosList extends Component {
       .then(response => response.json())
       .then(json => {
         this.setState({
-          videoIds: Array.from(new Set(json.map((video) => video.videoId))),
+          videoIds: Array.from(new Set(
+            json.map((video) => video.videoId).filter(x => x))),
           loading: false,
         });
       });

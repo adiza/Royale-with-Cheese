@@ -33,13 +33,24 @@ class Gif extends Component {
 
   componentDidUpdate(prevProps, prevState) {
     if (prevProps.playing === this.props.playing || !this.state.isReady) {
+      if (this.props.playing && !this.timeoutId &&
+        this.props.duration === '5sec') {
+        this.timeoutId =
+          setTimeout(() => {
+            this.props.onEnd();
+            this.timeoutId = null;
+          }, 5000);
+      }
       return;
     }
     if (this.props.playing) {
       this.wrapper.move_to(0);
       this.wrapper.play();
-      if (this.props.duration === '5sec') {
-        this.timeoutId = setTimeout(() => { this.props.onEnd(); }, 5000);
+      if (this.props.duration === '5sec' && !this.timeoutId) {
+        this.timeoutId = setTimeout(() => {
+          this.props.onEnd();
+          this.timeoutId = null;
+        }, 5000);
       }
     } else {
       this.wrapper.pause();
@@ -51,9 +62,10 @@ class Gif extends Component {
     if (!this.props.src) {
       return '';
     }
+    const src = this.props.src.slice(0, -"giphy.gif".length) + '200w.gif';
     return (
       <div style={this.props.style} className={this.props.className}>
-        <img ref={this.element} src={this.props.src} alt={this.props.alt}
+        <img ref={this.element} src={src} alt={this.props.alt}
           width={this.props.width} height={this.props.height} />
       </div>
     )

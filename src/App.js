@@ -322,8 +322,7 @@ class App extends Component {
               <Rnd bounds="parent" lockAspectRatio={true}
                 onDragStop={(e, d) => this.setState({newGifX: d.x, newGifY: d.y})}
                 onResize={(e,d,ref) =>
-                    console.log(this.state.newGifSize) || this.setState({newGifSize: ref.getBoundingClientRect()})}
-              >
+                    this.setState({newGifSize: ref.getBoundingClientRect()})}>
                 <img src={this.state.newGif.images.fixed_height_small.url}
                   style={{width: this.state.newGifSize.width || "100%",
                     height: this.state.newGifSize.height || "100%"

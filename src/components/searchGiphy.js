@@ -8,12 +8,12 @@ const searchGifs = (query, callback) => {
   const giphyApi = {
     baseUrl: 'http://api.giphy.com',
     searchEndpoint: '/v1/gifs/search',
-    publicApiKey: 'PrDuQjBTO5H7jg1eO1xj6sx5zGCsi4Y6'
+    publicApiKey: 'PrDuQjBTO5H7jg1eO1xj6sx5zGCsi4Y6',
   }
   const url = giphyApi.baseUrl + giphyApi.searchEndpoint +
     '?api_key=' + giphyApi.publicApiKey +
     '&q=' + query;
-  fetch(url)
+  fetch(url, {cors: 'cors', cache: 'no-cache'})
     .then((response) => response.json())
     .then((json) => callback(json['data']));
 };
