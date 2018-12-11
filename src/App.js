@@ -21,6 +21,7 @@ class App extends Component {
       videoPlaying: false,
       newGif: null,
       newGifX: 0, newGifY: 0,
+      newGifSize: {width: false, height: false},
       previouslyUsedGifs: JSON.parse(localStorage.getItem("usedGifs")) || [],
       showGifSearch: false,
       showAddGif: false,
@@ -29,6 +30,7 @@ class App extends Component {
 
     this.player = React.createRef();
     this.searchDiv = React.createRef();
+    this.newGifRnd = React.createRef();
 
     document.addEventListener('mousedown', this.handleDocumentClick, false);
     document.addEventListener('keydown', this.handleEsc, false);
@@ -76,6 +78,7 @@ class App extends Component {
       url: gif.gifId,
       timeFraction: gif.timestamp,
       fracX: gif.fracX, fracY: gif.fracY,
+      serverId: gif._id, scale: gif.scale,
     };
   }
 
@@ -149,7 +152,8 @@ class App extends Component {
 
   gifEnded = (gif) => {
     this.setState(({gifs}) => {
-      const gif_index = gifs.indexOf(gif);
+      const gif_index = gifs.findIndex(stateGif =>
+        stateGif.url === gif.url && stateGif.timeFraction === gif.timeFraction);
       if (gif_index === -1) {
         return gifs;
       }
@@ -186,7 +190,7 @@ class App extends Component {
       headers: { "Content-Type": "application/json; charset=utf-8", },
       body: JSON.stringify({videoId: gifInfo.videoId,
         gifId: gifInfo.url, gifTimestamp: gifInfo.timeFraction,
-        fracX: gifInfo.fracX, fracY: gifInfo.fracY
+        fracX: gifInfo.fracX, fracY: gifInfo.fracY, scale: gifInfo.scale,
       }),
     });
   }
@@ -206,10 +210,10 @@ class App extends Component {
       .getBoundingClientRect();
     return gifList.map(gif => {
       const positionX = Math.min(
-        gif.fracX*realDimensions.width+videoRect.width/2,
+        Math.max(gif.fracX*realDimensions.width+videoRect.width/2, 0),
         videoRect.width-100);
       const positionY = Math.min(
-        gif.fracY*realDimensions.height+videoRect.height/2,
+        Math.max(gif.fracY*realDimensions.height+videoRect.height/2, 0),
         videoRect.height-100);
       return {...gif, positionX, positionY};
     });
@@ -219,7 +223,7 @@ class App extends Component {
     this.setState(({gifs}) => ({ gifs: this.computeGifPositions(gifs) }));
   }
 
-  onWindowResize = () => {console.log('ha'); this.updateGifPositions(); }
+  onWindowResize = () => { this.updateGifPositions(); }
 
   saveNewGif = () => {
     const gif = this.state.newGif;
@@ -227,18 +231,24 @@ class App extends Component {
     const time = this.state.currentVideoTime;
     const videoId = this.state.videoId;
     const realDimensions = this.getRealVideoDimensions();
-    const fracX = this.state.newGifX / realDimensions.width - 0.5;
-    const fracY = this.state.newGifY / realDimensions.height - 0.5;
-    const toSave = {url, time, videoId, fracX, fracY,
+    const videoRect = ReactDOM.findDOMNode(this.player.current).children[0]
+      .getBoundingClientRect();
+    const fracX = (this.state.newGifX - videoRect.width/2) / realDimensions.width;
+    const fracY = (this.state.newGifY - videoRect.height/2) / realDimensions.height;
+    const scale = this.newGifRnd.current.getBoundingClientRect().width /
+      realDimensions.width;
+    const toSave = {url, time, videoId, fracX, fracY, scale,
       positionX: this.state.newGifX,
       positionY: this.state.newGifY,
-      timeFraction: time/this.state.videoDuration
+      timeFraction: time/this.state.videoDuration,
     };
     this.postNewGif(toSave);
+    console.log("adding gif " + toSave);
     this.setState({
       gifs: this.state.gifs.concat([toSave]),
       newGif: null,
-      newGifX: 0, newGifY: 0
+      newGifX: 0, newGifY: 0,
+      newGifSize: {width: false, height: false},
     });
   }
 
@@ -256,7 +266,7 @@ class App extends Component {
         <div className="header">
           <h1>Gifgif</h1>
           {this.state.newGif ?
-            <button type="button" className="btn btn-primary save-gif-button"
+            <button type="button" className="btn btn-success save-gif-button"
               onClick={this.saveNewGif}>
               Save
             </button> 
@@ -278,11 +288,17 @@ class App extends Component {
             opts={{width: '100%', height: '100%', playerVars: {autoplay: 1}}}
             ref={this.player} onReady={this.onPlayerReady}
             onStateChange={this.onPlayerStateChange} />
+          {this.state.newGif && <div className="protective-screen"/>}
           {this.state.newGif ?
-              <Rnd enableResizing={false} height="100px" bounds="parent"
-                enableUserSelectHack={false}
-                onDragStop={(e, d) => { this.setState({newGifX: d.x, newGifY: d.y}) }}>
-                <img src={this.state.newGif.images.fixed_height_small.url} />
+              <Rnd bounds="parent" lockAspectRatio={true}
+                onDragStop={(e, d) => this.setState({newGifX: d.x, newGifY: d.y})}
+                onResize={(e,d,ref) =>
+                    console.log(this.state.newGifSize) || this.setState({newGifSize: ref.getBoundingClientRect()})}
+              >
+                <img src={this.state.newGif.images.fixed_height_small.url}
+                  style={{width: this.state.newGifSize.width || "100%",
+                    height: this.state.newGifSize.height || "100%"
+                  }} ref={this.newGifRnd} />
               </Rnd>
               : ''
           }
@@ -294,6 +310,7 @@ class App extends Component {
           </div>
           {this.state.gifs.map(gif =>
             <GifDisplay gif={gif} key={gif.url+gif.timeFraction}
+              width={gif.scale*this.getRealVideoDimensions().width || 200}
               playing={gif.playing} onEnd={() => this.gifEnded(gif)}/>)}
         </div>
       </div>
