@@ -14,7 +14,7 @@
 importScripts("https://storage.googleapis.com/workbox-cdn/releases/3.6.3/workbox-sw.js");
 
 importScripts(
-  "/Royale-with-Cheese/precache-manifest.38ce5ca689082686814ffa7a3bab7b17.js"
+  "/Royale-with-Cheese/precache-manifest.e6d7304342eac429e9263e7e598070ff.js"
 );
 
 workbox.clientsClaim();

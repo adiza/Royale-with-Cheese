@@ -249,7 +249,6 @@ class App extends Component {
       timeFraction: time/this.state.videoDuration,
     };
     this.postNewGif(toSave);
-    console.log("adding gif " + toSave);
     this.setState({
       gifs: this.state.gifs.concat([toSave]),
       newGif: null,
