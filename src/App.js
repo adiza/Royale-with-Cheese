@@ -268,9 +268,8 @@ class App extends Component {
     }
     return (
       <div className="App container">
-        {this.state.showVideosList &&
-            <VideosList onHide={() => this.setState({showVideosList: false})}/>
-        }
+        <VideosList onHide={() => this.setState({showVideosList: false})}
+          visible={this.state.showVideosList} />
         <div className="header">
           <h1>Gifgif</h1>
           <button className="show-videos-list"
@@ -296,7 +295,8 @@ class App extends Component {
           }
           {this.state.newGif &&
               <div className="choose-duration">
-                <span className="play-label">Play gif</span>
+                <span className="play-label">
+                  Choose place and time for the gif. Play gif</span>
                 <div className="btn-group btn-group-toggle" data-toggle="buttons">
                   <button className={"btn btn-sm btn-primary "
                       +(this.state.newGifDuration==='once' ? "active" : "")}

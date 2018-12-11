@@ -33,8 +33,11 @@ class VideosListElement extends Component {
   }
 
   render() {
+    if (!this.state.loading && this.state.videoInfo.error) {
+      return '';
+    }
     return this.state.loading ?
-      <div className='video-info'>'Loading'</div> :
+      <div className='video-info'>Loading</div> :
       <PopulatedVideoInfo videoInfo={this.state.videoInfo}
         videoId={this.props.videoId}/>;
   }

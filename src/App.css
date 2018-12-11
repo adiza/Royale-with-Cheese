@@ -49,6 +49,11 @@
   right: 0;
 }
 
+.instructions {
+  float: right;
+  margin-right: 30px;
+}
+
 .save-gif-button {
   float: right;
   height: 40px;

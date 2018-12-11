@@ -26,7 +26,6 @@ class VideosList extends Component {
 
   hideList = (e) => {
     e.preventDefault();
-    console.log('click');
     if (this.props.onHide) {
       this.props.onHide();
     }
@@ -34,10 +33,12 @@ class VideosList extends Component {
 
   render() {
     return (
-      <div className='videos-list'>
+      <div className='videos-list'
+        style={{visibility: !this.props.visible && 'hidden'}}>
         <button href="#" onClick={this.hideList} className="hide-link">
           Hide
         </button>
+        {this.state.loading && <div className="results-loading">Loading</div>}
         {this.state.videoIds.map((videoId) =>
           <VideosListElement videoId={videoId} />)
         }
