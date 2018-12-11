@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import SuperGif from 'libgif';
+import SuperGif from './libgif.js';
 import PropTypes from 'prop-types';
 
 class Gif extends Component {
@@ -66,7 +66,7 @@ class Gif extends Component {
     return (
       <div style={this.props.style} className={this.props.className}>
         <img ref={this.element} src={src} alt={this.props.alt}
-          width={this.props.width} height={this.props.height} />
+          width={this.props.width} height="auto" />
       </div>
     )
   }
