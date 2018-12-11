@@ -7,7 +7,7 @@ class PopulatedVideoInfo extends Component {
     return (
       <div className='video-info'
         style={{backgroundImage: 'url('+this.props.videoInfo.thumbnail_url+')'}}
-        onClick={() => { window.location = './?id='+this.props.videoId; }}>
+        onClick={() => { window.location = '?id='+this.props.videoId; }}>
         <span>
           {this.props.videoInfo.title}
         </span>

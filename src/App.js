@@ -46,16 +46,18 @@ class App extends Component {
   }
 
   componentDidMount() {
-    if (this.state.videoId) {
-      fetch(SERVER_ADDRESS+'/videos', {
-        method: 'post', cache: 'no-cache', cors: 'cors',
-        headers: { "Content-Type": "application/json; charset=utf-8", },
-        body: JSON.stringify({videoId: this.state.videoId}),
-      });
-      fetch(VIDEO_INFO_ADDRESS+this.state.videoId)
-        .then(response => response.json())
-        .then(json => this.setState({videoInfo: json}));
+    if (!this.state.videoId) {
+      window.location = '?id=dQw4w9WgXcQ';
+      return;
     }
+    fetch(SERVER_ADDRESS+'/videos', {
+      method: 'post', cache: 'no-cache', cors: 'cors',
+      headers: { "Content-Type": "application/json; charset=utf-8", },
+      body: JSON.stringify({videoId: this.state.videoId}),
+    });
+    fetch(VIDEO_INFO_ADDRESS+this.state.videoId)
+      .then(response => response.json())
+      .then(json => this.setState({videoInfo: json}));
   }
 
   handleEsc = (event) => {
